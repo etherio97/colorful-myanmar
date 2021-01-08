@@ -1,10 +1,22 @@
-import Vue from 'vue'
-import App from './App.vue'
-import router from './router'
+import Vue from "vue";
+import App from "./App.vue";
+import router from "./router";
+import vuetify from "./plugins/vuetify";
+import config from "../config";
+import axios from "axios";
+import VueAxios from "vue-axios";
+import firebase from "firebase/app";
+import "firebase/auth";
+import "firebase/database";
+import "firebase/storage";
 
-Vue.config.productionTip = false
+Vue.use(VueAxios, axios);
+Vue.config.productionTip = false;
+
+firebase.initializeApp(config.FIREBASE_CONFIG);
 
 new Vue({
   router,
-  render: h => h(App)
-}).$mount('#app')
+  vuetify,
+  render: (h) => h(App),
+}).$mount("#app");
