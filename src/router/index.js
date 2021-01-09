@@ -12,6 +12,10 @@ const routes = [
     path: "/video/:id",
     component: () => import("../views/Video.vue"),
   },
+  {
+    path: "/search",
+    component: () => import("../views/Search.vue"),
+  },
 ];
 
 const router = new VueRouter({

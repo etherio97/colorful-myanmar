@@ -38,23 +38,21 @@
 <script>
 import config from "../../config";
 export default {
-  props: ["id", "width", "height"],
+  props: ["id"],
 
-  data() {
-    return {
-      loading: true,
-      completed: false,
-      playing: false,
-      audios: [],
-      title: null,
-      channel: null,
-      viewCount: null,
-      thumbnails: [],
-      current: 0,
-      duration: 0,
-      verfied: false,
-    };
-  },
+  data: () => ({
+    loading: true,
+    completed: false,
+    playing: false,
+    audios: [],
+    title: null,
+    channel: null,
+    viewCount: null,
+    thumbnails: [],
+    current: 0,
+    duration: 0,
+    verfied: false,
+  }),
 
   created() {
     this.axios(`${config.SERVER_URL}/v/${this.id}`).then(({ data }) => {

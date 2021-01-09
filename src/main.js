@@ -16,6 +16,15 @@ Vue.config.productionTip = false;
 firebase.initializeApp(config.FIREBASE_CONFIG);
 
 new Vue({
+  data: {
+    player: {
+      title: null,
+      artists: [],
+      thumbnail: null,
+      src: null,
+      playing: false,
+    },
+  },
   router,
   vuetify,
   render: (h) => h(App),

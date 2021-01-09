@@ -1,16 +1,16 @@
 <template>
   <v-container>
-    <TopHits></TopHits>
+    <YoutubeSearch></YoutubeSearch>
   </v-container>
 </template>
 
 <script>
-import TopHits from "../components/TopHits.vue";
+import YoutubeSearch from "../components/YoutubeSearch";
 
 export default {
   name: "Home",
   components: {
-    TopHits,
+    YoutubeSearch,
   },
 };
 </script>

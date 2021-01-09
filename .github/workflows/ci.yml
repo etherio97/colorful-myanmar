@@ -12,13 +12,15 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: npm install
+
+      - name: Install
+        run: npm install
+
       - name: Build
         run: npm run build
+
+      - name: Firebase CLI
+        run: npm install --global firebase-tools
+
       - name: Deploy
-        uses: crazy-max/ghaction-github-pages@v1
-        with:
-          target_branch: gh-pages
-          build_dir: dist
-        env:
-          GITHUB_TOKEN: ${{ secrets.GPA_TOKEN }}
+        run: firebase deploy --token ${{ secrets.FIREBASE_TOKEN }}

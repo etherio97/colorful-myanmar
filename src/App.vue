@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar app dark color="secondary">
+    <v-app-bar app color="secondary" dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>
         <router-link to="/">
@@ -10,7 +10,7 @@
       <v-spacer></v-spacer>
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer" temporary absolute>
+    <v-navigation-drawer v-model="drawer" temporary fixed>
       <v-list-item>
         <v-list-item-content>
           <v-list-item-title class="title">
@@ -40,18 +40,29 @@
     <v-main>
       <router-view> </router-view>
     </v-main>
+
+    <AudioPlayer
+      :thumbnail="$root.player.thumbnail"
+      :title="$root.player.title"
+      :artists="$root.player.artists"
+      :sources="$root.player.sources"
+      :playing="$root.player.playing"
+    ></AudioPlayer>
   </v-app>
 </template>
 
 <script>
+import AudioPlayer from "./components/AudioPlayer.vue";
 export default {
   name: "App",
 
-  data() {
-    return {
-      drawer: false,
-      items: [],
-    };
+  data: () => ({
+    drawer: false,
+    items: [],
+  }),
+
+  components: {
+    AudioPlayer,
   },
 };
 </script>

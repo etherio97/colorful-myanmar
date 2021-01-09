@@ -19,7 +19,7 @@
         sm="6"
         lg="4"
       >
-        <v-card :to="{ path: `/video/${result.id}` }">
+        <v-card style="cursor: pointer;" @click="play(result)">
           <v-img :src="result.thumbnails[2]"></v-img>
           <v-card-title>
             {{ result.title }}
@@ -27,9 +27,6 @@
           <v-card-subtitle>
             {{ result.channel }}
           </v-card-subtitle>
-          <v-card-text>
-            {{ result.description }}
-          </v-card-text>
         </v-card>
       </v-col>
     </v-row>
@@ -38,14 +35,14 @@
 
 <script>
 import config from "../../config";
+import player from "../functions/player";
+
 export default {
-  data() {
-    return {
-      query: null,
-      searching: false,
-      results: [],
-    };
-  },
+  data: () => ({
+    query: "",
+    searching: false,
+    results: [],
+  }),
 
   methods: {
     search() {
@@ -68,6 +65,32 @@ export default {
         }
       );
     },
+
+    async play({ id, title, thumbnails }) {
+      let artists = [];
+      let audioPlayer = this.$root.player;
+      audioPlayer.playing = false;
+      if (this.$route.query.title) {
+        title = this.$route.query.title;
+      }
+      if (this.$route.query.artists) {
+        artists = this.$route.query.artists.split(",");
+      }
+      const { sources } = await player(config.SERVER_URL, id);
+      this.$root.player.src = sources[0].url;
+      audioPlayer.title = title;
+      audioPlayer.artists = artists;
+      audioPlayer.thumbnail = thumbnails[0];
+      // audioPlayer.playing = true;
+    },
+  },
+
+  beforeMount() {
+    let { title, artists } = this.$route.query;
+    if (title && artists) {
+      this.query = `${title} - ${artists}`;
+      this.search();
+    }
   },
 };
 </script>
