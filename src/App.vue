@@ -25,13 +25,17 @@
       <v-divider></v-divider>
 
       <v-list dense nav>
-        <v-list-item v-for="item in items" :key="item.title" link>
+        <v-list-item
+          v-for="(nav, index) in navItems"
+          :key="index"
+          :to="nav.path"
+        >
           <v-list-item-icon>
-            <v-icon>{{ item.icon }}</v-icon>
+            <v-icon>{{ nav.icon }}</v-icon>
           </v-list-item-icon>
 
           <v-list-item-content>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
+            <v-list-item-title>{{ nav.title }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -41,24 +45,22 @@
       <router-view> </router-view>
     </v-main>
 
-    <AudioPlayer
-      :thumbnail="$root.player.thumbnail"
-      :title="$root.player.title"
-      :artists="$root.player.artists"
-      :sources="$root.player.sources"
-      :playing="$root.player.playing"
-    ></AudioPlayer>
+    <AudioPlayer></AudioPlayer>
   </v-app>
 </template>
 
 <script>
 import AudioPlayer from "./components/AudioPlayer.vue";
-export default {
-  name: "App",
 
+const navItems = [
+  { path: "/", icon: "mdi-home", title: "Home" },
+  { path: "/search", icon: "mdi-movie-search", title: "Search" },
+];
+
+export default {
   data: () => ({
     drawer: false,
-    items: [],
+    navItems,
   }),
 
   components: {

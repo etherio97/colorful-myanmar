@@ -13,19 +13,19 @@
     </v-form>
     <v-row>
       <v-col
-        v-for="(result, index) in results"
+        v-for="(item, index) in results"
         :key="index"
         cols="12"
         sm="6"
         lg="4"
       >
-        <v-card style="cursor: pointer;" @click="play(result)">
-          <v-img :src="result.thumbnails[2]"></v-img>
+        <v-card style="cursor: pointer;" @click="play(item)">
+          <v-img :src="item.thumbnail"></v-img>
           <v-card-title>
-            {{ result.title }}
+            {{ item.title }}
           </v-card-title>
           <v-card-subtitle>
-            {{ result.channel }}
+            {{ item.channel }}
           </v-card-subtitle>
         </v-card>
       </v-col>
@@ -48,47 +48,49 @@ export default {
     search() {
       this.searching = true;
       this.results = [];
-      this.axios(`${config.SERVER_URL}/search?q=${this.query} `).then(
-        ({ data }) => {
-          data.forEach((snippet) => {
-            this.results.push({
-              id: snippet.id,
-              title: snippet.title,
-              channel: snippet.channelTitle,
-              publishedAt: snippet.publishedAt,
-              thumbnails: Object.values(snippet.thumbnails).map(
-                (thumbnail) => thumbnail.url
-              ),
-            });
-            this.searching = false;
+      let q = encodeURI(this.query);
+      this.axios(`${config.SERVER_URL}/s?q=${q} `).then(({ data }) => {
+        data.forEach((video) => {
+          this.results.push({
+            id: video.videoId,
+            title: video.title,
+            channel: video.author.name,
+            age: video.ago,
+            thumbnail: video.thumbnail,
+            duration: video.seconds,
           });
-        }
-      );
+          this.searching = false;
+        });
+      });
     },
 
-    async play({ id, title, thumbnails }) {
-      let artists = [];
-      let audioPlayer = this.$root.player;
-      audioPlayer.playing = false;
-      if (this.$route.query.title) {
-        title = this.$route.query.title;
-      }
-      if (this.$route.query.artists) {
-        artists = this.$route.query.artists.split(",");
-      }
-      const { sources } = await player(config.SERVER_URL, id);
-      this.$root.player.src = sources[0].url;
-      audioPlayer.title = title;
-      audioPlayer.artists = artists;
-      audioPlayer.thumbnail = thumbnails[0];
-      // audioPlayer.playing = true;
+    async play(item) {
+      let { title, artists } = this.$route.query;
+      let {
+        data: { formats },
+      } = await this.axios.get(`${config.SERVER_URL}/v/${item.id}`);
+      title = decodeURI(title || item.title);
+      artists = decodeURI(artists || item.channel);
+      formats = formats
+        .filter(({ hasAudio, hasVideo }) => !!hasAudio && !hasVideo)
+        .sort((a, b) => b.bitrate - a.bitrate);
+      this.$root.player
+        .play({
+          title: title || item.title,
+          thumbnail: item.thumbnail,
+          src: formats[0].url,
+          type: formats[0].mimeType.split(";")[0],
+          artists: artists.split(","),
+        })
+        .play();
+      this.$root.player.show = true;
     },
   },
 
   beforeMount() {
     let { title, artists } = this.$route.query;
     if (title && artists) {
-      this.query = `${title} - ${artists}`;
+      this.query = `${decodeURI(title)} - ${decodeURI(artists)}`;
       this.search();
     }
   },

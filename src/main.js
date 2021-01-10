@@ -17,13 +17,7 @@ firebase.initializeApp(config.FIREBASE_CONFIG);
 
 new Vue({
   data: {
-    player: {
-      title: null,
-      artists: [],
-      thumbnail: null,
-      src: null,
-      playing: false,
-    },
+    player: null,
   },
   router,
   vuetify,

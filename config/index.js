@@ -1,9 +1,15 @@
-const config = require("./config.production");
+import config from "./config.production";
 
 if (process.env.NODE_ENV === "development") {
-  for (let [name, value] of Object.entries(require("./config.development"))) {
-    config[name] = value;
-  }
+  let update = async () => {
+    const dev = await import("./config.development");
+
+    for (let [key, value] of Object.entries(dev)) {
+      config[key] = value;
+    }
+  };
+
+  update();
 }
 
-module.exports = config;
+export default config;

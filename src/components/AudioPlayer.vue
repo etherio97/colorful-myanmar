@@ -1,8 +1,8 @@
 <template>
-  <v-footer fixed padless v-if="title && sources">
-    <v-card tile flat width="100%">
+  <v-footer fixed padless>
+    <v-card tile flat width="100%" v-if="show">
       <v-progress-linear
-        :value="percent"
+        :value="percentage"
         class="my-0"
         height="3"
       ></v-progress-linear>
@@ -12,7 +12,7 @@
           <v-list-item-content>
             <v-list-item-title>{{ title }}</v-list-item-title>
             <v-list-item-subtitle v-if="artists && artists.length">
-              {{ artists.join(",") }}
+              {{ artists.join(", ") }}
             </v-list-item-subtitle>
           </v-list-item-content>
 
@@ -43,88 +43,51 @@
 
 <script>
 export default {
-  props: ["title", "artists", "thumbnail", "src", "playing"],
-
   data: () => ({
-    player: null,
-    current: 0,
-    duration: 0,
-    isPlaying: true,
+    show: false,
+    playing: false,
+    title: null,
+    thumbnail: null,
+    artists: [],
+    audio: null,
+    percentage: 0,
   }),
 
   methods: {
     toggle() {
-      if (this.player) {
-        if (this.player.paused) {
-          this.player.play();
-          this.$root.player.playing = true;
-        } else {
-          this.player.pause();
-          this.$root.player.playing = false;
-        }
-      }
-    },
-  },
-
-  computed: {
-    percent() {
-      return (this.current / this.duration) * 100;
-    },
-  },
-
-  watch: {
-    playing(value) {
-      const player = this.player || new Audio();
-      if (!this.player) {
-        player.addEventListener("timeupdate", () => {
-          this.current = player.currentTime;
-        });
-        player.addEventListener("change", () => {
-          this.current = 0;
-          this.duration = player.duration;
-        });
-        player.addEventListener("durationchange", () => {
-          this.current = 0;
-          this.duration = player.duration;
-        });
-        player.addEventListener("canplaythrough", () => {
-          player.play();
-        });
-        this.player = player;
-      }
-      if (value) {
-        player.play();
+      if (this.playing) {
+        this.audio.pause();
       } else {
-        player.pause();
+        this.audio.play();
       }
     },
 
-    src(value) {
-      const player = this.player || new Audio();
-      if (!this.player) {
-        player.addEventListener("timeupdate", () => {
-          this.current = player.currentTime;
-        });
-        player.addEventListener("change", () => {
-          this.current = 0;
-          this.duration = player.duration;
-        });
-        player.addEventListener("durationchange", () => {
-          this.current = 0;
-          this.duration = player.duration;
-        });
-        player.addEventListener("canplaythrough", () => {
-          player.play();
-        });
-        this.player = player;
-      }
-      player.src = value;
+    play({ title, artists, thumbnail, src, type }) {
+      this.audio.pause();
+      this.audio.currentTime = 0;
+      this.audio.type = type;
+      this.audio.src = src;
+      this.thumbnail = thumbnail;
+      this.title = title;
+      this.artists = artists;
+      return this.audio;
     },
+  },
 
-    current(newValue, oldValue) {
-      if (Math.pow(newValue - oldValue, 2) < 1) return;
-      this.player.currentTime = newValue;
-    },
+  beforeMount() {
+    this.$root.player = this;
+    this.audio = this.audio || new Audio();
+    this.audio.addEventListener("play", () => {
+      this.show = true;
+      this.playing = true;
+    });
+    this.audio.addEventListener("pause", () => {
+      this.playing = false;
+    });
+    this.audio.addEventListener("timeupdate", () => {
+      this.percentage = (this.audio.currentTime / this.audio.duration) * 100;
+    });
+    document.body.appendChild(this.audio);
   },
 };
 </script>

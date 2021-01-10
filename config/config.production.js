@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   FIREBASE_CONFIG: {
     apiKey: "AIzaSyAMdONNLkOvPdidoFfufAiTR-M_A4sHKJo",
     authDomain: "colorful-myanmar.firebaseapp.com",
